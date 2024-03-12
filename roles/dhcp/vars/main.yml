@@ -1,0 +1,12 @@
+dhcp_subnet: "10.10.10.0"
+dhcp_netmask: "255.255.255.0"
+dhcp_range_start: "10.10.10.60"
+dhcp_range_end: "10.10.10.254"
+dhcp_static_mappings:
+  - { name: 'primary', mac: '00:11:22:33:44:55', ip: '10.10.10.14' }
+  - { name: 'server1', mac: '00:11:22:33:44:56', ip: '10.10.10.12' }
+  - { name: 'server2', mac: '00:11:22:33:44:57', ip: '10.10.10.11' }
+  - { name: 'server3', mac: '00:11:22:33:44:58', ip: '10.10.10.13' }
+dhcp_options:
+  - { option: 'ntp-servers', value: '10.10.10.14' }
+

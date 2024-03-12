@@ -1,0 +1,14 @@
+subnet 10.10.10.0 netmask 255.255.255.0 {
+    range 10.10.10.20 10.10.10.254;
+    option routers 10.10.10.1;
+    option subnet-mask 255.255.255.0;
+    option domain-name-servers 10.10.10.14;
+    option ntp-servers 10.10.10.14;
+
+    host primary {
+        hardware ethernet 00:11:22:33:44:55;
+        fixed-address 10.10.10.14;
+    }
+    # Define other servers here similarly
+}
+

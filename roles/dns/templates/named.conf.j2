@@ -1,0 +1,17 @@
+// This is a simplified configuration file for the lab setup.
+options {
+    directory "/var/named";
+    listen-on port 53 { any; };
+    allow-query { any; };
+};
+
+zone "lab.internal" IN {
+    type master;
+    file "db.lab.internal";
+};
+
+zone "10.10.10.in-addr.arpa" IN {
+    type master;
+    file "db.10.10.10";
+};
+

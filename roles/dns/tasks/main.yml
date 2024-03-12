@@ -1,0 +1,20 @@
+- name: Install BIND DNS Server
+  ansible.builtin.yum:
+    name: bind
+    state: present
+
+- name: Configure BIND DNS Server
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/named/{{ item }}"
+  loop:
+    - named.conf
+    - db.lab.com
+    - db.10.10.10
+
+- name: Ensure BIND is running and enabled
+  ansible.builtin.service:
+    name: named
+    state: started
+    enabled: yes
+

@@ -1,0 +1,8 @@
+- hosts: infrastructure
+  become: yes
+  roles:
+    - dns
+    - dhcp
+    - ntp
+    - virtualization
+
