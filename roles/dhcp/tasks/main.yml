@@ -1,6 +1,6 @@
 - name: Install ISC DHCP Server
   ansible.builtin.yum:
-    name: dhcp
+    name: dhcp-server
     state: present
 
 - name: Configure ISC DHCP Server

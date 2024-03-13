@@ -1,17 +1,36 @@
-// This is a simplified configuration file for the lab setup.
 options {
     directory "/var/named";
     listen-on port 53 { any; };
     allow-query { any; };
+    recursion no;
+    forwarders {
+        8.8.8.8;
+        8.8.4.4;
+    };
 };
 
-zone "lab.internal" IN {
-    type master;
-    file "db.lab.internal";
+zone "." IN {
+    type hint;
+    file "named.ca";
 };
 
-zone "10.10.10.in-addr.arpa" IN {
+zone "{{ dns_forward_zone }}" IN {
     type master;
-    file "db.10.10.10";
+    file "{{ dns_forward_zone_file }}";
+};
+
+zone "{{ dns_reverse_zone }}" IN {
+    type master;
+    file "{{ dns_reverse_zone_file }}";
+};
+
+zone "localhost" IN {
+    type master;
+    file "named.localhost";
+};
+
+zone "0.0.127.in-addr.arpa" IN {
+    type master;
+    file "named.loopback";
 };
 
