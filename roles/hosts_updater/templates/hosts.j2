@@ -1,0 +1,9 @@
+# /etc/hosts - Managed by Ansible
+127.0.0.1   localhost
+::1         localhost
+
+# DNS Entries
+{% for entry in dns_entries %}
+{{ entry.ip }}   {{ entry.hostname }}
+{% endfor %}
+
