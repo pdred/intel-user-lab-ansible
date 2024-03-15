@@ -21,7 +21,7 @@
   loop:
     - db.lab.com
     - db.10.10.10
-  notify: restart bind
+  notify: restart named
 
 - name: Ensure BIND is running and enabled
   ansible.builtin.service:
