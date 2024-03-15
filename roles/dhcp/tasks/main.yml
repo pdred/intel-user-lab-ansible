@@ -10,9 +10,6 @@
     owner: root
     group: root
     mode: '0644'
-  template:
-    src: dhcpd.conf.j2
-    dest: /etc/dhcp/dhcpd.conf
 
 - name: Enable and start ISC DHCP service
   ansible.builtin.service:
