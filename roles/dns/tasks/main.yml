@@ -11,6 +11,7 @@
     - named.conf
     - db.lab.com
     - db.10.10.10
+  notify: restart bind
 
 - name: Ensure BIND is running and enabled
   ansible.builtin.service:
@@ -18,3 +19,8 @@
     state: started
     enabled: yes
 
+- name: Restart BIND
+  ansible.builtin.service:
+    name: named
+    state: restarted
+    enabled: yes

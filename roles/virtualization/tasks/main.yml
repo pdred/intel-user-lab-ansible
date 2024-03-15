@@ -7,6 +7,13 @@
       - libvirt-client
     state: present
 
+- name: Configure dnsmasq to listen on virbr0 only
+  ansible.builtin.lineinfile:
+    path: /etc/dnsmasq.conf
+    line: 'interface=virbr0\nbind-interfaces'
+    create: yes
+  notify: restart dnsmasq
+
 - name: Enable and start libvirtd service
   ansible.builtin.service:
     name: libvirtd
