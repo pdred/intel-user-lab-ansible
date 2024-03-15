@@ -9,4 +9,3 @@ dhcp_static_mappings:
   - { name: 'b5r10u08', mac: 'a4:bf:01:96:43:73', ip: '10.10.10.13' }
 dhcp_options:
   - { option: 'ntp-servers', value: '10.10.10.14' }
-

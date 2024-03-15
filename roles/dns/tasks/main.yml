@@ -1,12 +1,10 @@
-- name: Install BIND DNS Server
-  ansible.builtin.yum:
-    name: bind
-    state: present
-
 - name: Configure BIND DNS Server
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "/etc/named/{{ item }}"
+    owner: root
+    group: named
+    mode: '0644'
   loop:
     - named.conf
     - db.lab.com
@@ -17,10 +15,10 @@
   ansible.builtin.service:
     name: named
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Restart BIND
   ansible.builtin.service:
     name: named
     state: restarted
-    enabled: yes
+    enabled: true

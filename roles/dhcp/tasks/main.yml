@@ -4,6 +4,12 @@
     state: present
 
 - name: Configure ISC DHCP Server
+  ansible.builtin.template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    group: root
+    mode: '0644'
   template:
     src: dhcpd.conf.j2
     dest: /etc/dhcp/dhcpd.conf
@@ -12,5 +18,4 @@
   ansible.builtin.service:
     name: dhcpd
     state: started
-    enabled: yes
-
+    enabled: true

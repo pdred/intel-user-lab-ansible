@@ -7,22 +7,14 @@
       - libvirt-client
     state: present
 
-- name: Configure dnsmasq to listen on virbr0 only
-  ansible.builtin.lineinfile:
-    path: /etc/dnsmasq.conf
-    line: 'interface=virbr0\nbind-interfaces'
-    create: yes
-  notify: restart dnsmasq
-
 - name: Enable and start libvirtd service
   ansible.builtin.service:
     name: libvirtd
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Add current user to libvirt group
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: libvirt
-    append: yes
-
+    append: true
