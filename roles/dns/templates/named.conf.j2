@@ -3,7 +3,7 @@ options {
     listen-on port 53 { 127.0.0.1; 10.10.10.14; };
     listen-on-v6 { none; };
     allow-query { any; };
-    recursion no;
+    recursion yes; // Added line to enable recursion
     forwarders {
         1.1.1.1;
         8.8.8.8;
