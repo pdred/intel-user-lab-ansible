@@ -1,0 +1,32 @@
+---
+- name: Check if SSH key exists
+  ansible.builtin.stat:
+    path: "~/.ssh/ansible_ed25519"
+  register: ssh_key
+
+- name: Generate SSH key if it does not exist
+  ansible.builtin.command: ssh-keygen -t ed25519 -N "" -f ~/.ssh/ansible_ed25519
+  when: not ssh_key.stat.exists
+  delegate_to: localhost
+
+- name: Add SSH key to ssh-agent
+  ansible.builtin.shell: ssh-add ~/.ssh/ansible_ed25519
+  delegate_to: localhost
+  when: ssh_key.stat.exists
+
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - ansible
+      - git
+      - xauth
+      - NetworkManager-tui
+    state: present
+
+- name: Enable X11Forwarding in SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?X11Forwarding'
+    line: 'X11Forwarding yes'
+    state: present
+  notify: restart sshd

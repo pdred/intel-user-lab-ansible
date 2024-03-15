@@ -2,6 +2,7 @@
   hosts: infrastructure
   become: true
   roles:
+    - initial_setup
     - dns
     - dhcp
     - ntp
