@@ -11,11 +11,10 @@
   ansible.builtin.service:
     name: libvirtd
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Add current user to libvirt group
   ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: libvirt
-    append: yes
-
+    append: true

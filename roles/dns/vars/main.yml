@@ -2,4 +2,3 @@ dns_forward_zone: "lab.com"
 dns_forward_zone_file: "db.lab.com"
 dns_reverse_zone: "10.10.10.in-addr.arpa"
 dns_reverse_zone_file: "db.10.10.10"
-
