@@ -1,3 +1,7 @@
+option domain-name "lab.com";
+default-lease-time 600;
+max-lease-time 7200;
+
 subnet 10.10.10.0 netmask 255.255.255.0 {
     range 10.10.10.20 10.10.10.254;
     option routers 10.10.10.1;
