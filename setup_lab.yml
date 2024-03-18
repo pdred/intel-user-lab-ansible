@@ -4,6 +4,7 @@
   roles:
     - initial_setup
     - dns
+    - resolv
     - dhcp
     - ntp
     - virtualization
