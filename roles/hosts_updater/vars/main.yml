@@ -1,5 +1,6 @@
 dns_entries:
   - { hostname: "b5r10u39.lab.com", ip: "10.10.10.14" }
+  - { hostname: "b5r10u37.lab.com", ip: "10.10.10.22" }
   - { hostname: "b5r10u14.lab.com", ip: "10.10.10.15" }
   - { hostname: "b5r10u11.lab.com", ip: "10.10.10.12" }
   - { hostname: "b5r10u08.lab.com", ip: "10.10.10.13" }
