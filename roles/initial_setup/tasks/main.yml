@@ -17,9 +17,10 @@
 - name: Install required packages
   ansible.builtin.package:
     name:
-      - ansible
+      - ansible-core
       - git
       - xauth
+      - gnome-keyring
       - NetworkManager-tui
     state: present
 
