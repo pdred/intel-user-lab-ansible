@@ -1,3 +1,2 @@
 network_connection_name: "eno1np0"
-ansible_host: "10.10.10.14"
-
+ansible_host: "10.10.10.22"
