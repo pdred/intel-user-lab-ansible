@@ -26,6 +26,16 @@
   delegate_to: localhost
   when: ssh_key.stat.exists
 
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - ansible-core
+      - git
+      - xauth
+      - gnome-keyring
+      - NetworkManager-tui
+    state: present
+
 - name: Enable X11Forwarding in SSH
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
