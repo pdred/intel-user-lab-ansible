@@ -3,28 +3,34 @@
     name: bind
     state: present
 
+- name: Start and Enable Named Service
+  service:
+    name: named
+    state: started
+    enabled: yes
+
 - name: Configure BIND DNS Server
-  ansible.builtin.template:
-    src: "named.conf.j2"
+  ansible.builtin.copy:
+    src: "/home/sdp/intel-user-lab-ansible/roles/dns/templates/named.conf.j2"
     dest: "/etc/named/named.conf"
     owner: root
     group: named
     mode: '0644'
 
-- name: Configure BIND DNS Zones
+- name: Configure Reverse DNS Zone
   ansible.builtin.copy:
-    content: "{{ item }}"
-    dest: "/var/named/{{ item }}"
+    src: "/home/sdp/intel-user-lab-ansible/roles/dns/templates/db.10.10.10.j2"
+    dest: "/var/named/db.10.10.10"
     owner: root
     group: named
     mode: '0644'
-  loop:
-    - db.lab.com
-    - db.10.10.10
-  notify: restart named
+    notify: restart named
 
-- name: Ensure BIND is running and enabled
-  ansible.builtin.service:
-    name: named
-    state: started
-    enabled: true
+- name: Configure Forward DNS Zone
+  ansible.builtin.copy:
+    src: "/home/sdp/intel-user-lab-ansible/roles/dns/templates/db.lab.com.j2"
+    dest: "/var/named/db.lab.com"
+    owner: root
+    group: named
+    mode: '0644'
+

@@ -9,19 +9,22 @@
   when: not ssh_key.stat.exists
   delegate_to: localhost
 
+- name: Create systemd user service for ssh-agent
+  template:
+    src: ssh-agent.service.j2
+    dest: "/etc/systemd/user/ssh-agent.service"
+
+- name: Enable ssh-agent service to start on boot
+  systemd:
+    user: yes
+    name: ssh-agent
+    enabled: yes
+    state: started
+
 - name: Add SSH key to ssh-agent
   ansible.builtin.shell: ssh-add ~/.ssh/ansible_ed25519
   delegate_to: localhost
   when: ssh_key.stat.exists
-
-- name: Install required packages
-  ansible.builtin.package:
-    name:
-      - ansible
-      - git
-      - xauth
-      - NetworkManager-tui
-    state: present
 
 - name: Enable X11Forwarding in SSH
   ansible.builtin.lineinfile:
@@ -30,3 +33,40 @@
     line: 'X11Forwarding yes'
     state: present
   notify: restart sshd
+
+- name: Ensure authorized_keys exists
+  file:
+    path: "~/.ssh/authorized_keys"
+    state: touch
+
+- name: Add SSH key to authorized_keys
+  lineinfile:
+    path: "~/.ssh/authorized_keys"
+    line: "{{ lookup('file', ssh_key_path + '.pub') }}"
+    state: present
+
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - ansible-core
+      - gnome-keyring
+      - git
+      - xauth
+      - NetworkManager-tui
+      - python3-pip
+    state: present
+
+- name: Add current user to the wheel group
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: wheel
+    append: yes
+
+- name: Allow wheel group to sudo without a password
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+
