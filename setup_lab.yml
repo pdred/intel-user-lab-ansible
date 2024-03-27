@@ -8,6 +8,5 @@
     - dhcp
     - ntp
     - firewall
-    - virtualization
     - network_config
     - hosts_updater
