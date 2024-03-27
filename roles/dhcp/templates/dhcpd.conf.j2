@@ -3,15 +3,77 @@ default-lease-time 600;
 max-lease-time 7200;
 
 subnet 10.10.10.0 netmask 255.255.255.0 {
-    range 10.10.10.20 10.10.10.254;
+    range 10.10.10.100 10.10.10.254;
     option routers 10.10.10.1;
     option subnet-mask 255.255.255.0;
-    option domain-name-servers 10.10.10.22;
-    option ntp-servers 10.10.10.22;
+    option domain-name-servers 10.10.10.8;
+    option ntp-servers 10.10.10.8;
 
-    host primary {
+    host b5r10u37 {
         hardware ethernet a4:bf:01:4f:2f:2e;
+        fixed-address 10.10.10.8;
+    }
+
+    host masternode {
+        hardware ethernet a4:bf:01:57:14:10;
         fixed-address 10.10.10.22;
     }
+
+    host b5r10u14 {
+        hardware ethernet a4:bf:01:96:43:cd;
+        fixed-address 10.10.10.15;
+    }
+
+    host b5r10u11 {
+        hardware ethernet a4:bf:01:94:3e:55;
+        fixed-address 10.10.10.12;
+    }
+
+    host b5r10u08 {
+        hardware ethernet a4:bf:01:96:43:73;
+        fixed-address 10.10.10.13;
+    }
+
+
+    host b5r10u11-bmc {
+        hardware ethernet a4:bf:01:94:3e:57;
+        fixed-address 10.10.10.61;
+    }
+
+    host b5r10u08-bmc {
+        hardware ethernet a4:bf:01:96:43:75;
+        fixed-address 10.10.10.62;
+    }
+
+    host b5r10u39-bmc {
+        hardware ethernet a4:bf:01:57:14:14;
+        fixed-address 10.10.10.63;
+    }
+
+    host b5r10u14-bmc {
+        hardware ethernet a4:bf:01:96:43:cf;
+        fixed-address 10.10.10.66;
+    }
+
+    host b5r10u37-bmc {
+        hardware ethernet a4:bf:01:4f:2f:32;
+        fixed-address 10.10.10.69;
+    }
+
+    host b5r10u70-idrac {
+        hardware ethernet c4:cb:e1:b6:e7:4e;
+        fixed-address 10.10.10.70;
+    }
+
+    host b5r10u71-idrac {
+        hardware ethernet c4:cb:e1:b6:e8:aa;
+        fixed-address 10.10.10.71;
+    }
+
+    host b5r10u72-idrac {
+        hardware ethernet c4:cb:e1:b6:81:74;
+        fixed-address 10.10.10.72;
+    }
+
     # Define other servers here similarly
 }
