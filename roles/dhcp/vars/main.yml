@@ -1,12 +1,23 @@
 dhcp_subnet: "10.10.10.0"
 dhcp_netmask: "255.255.255.0"
-dhcp_range_start: "10.10.10.60"
+dhcp_range_start: "10.10.10.100"
 dhcp_range_end: "10.10.10.254"
 dhcp_static_mappings:
-  - { name: 'b5r10u39', mac: 'a4:bf:01:4f:2f:2e', ip: '10.10.10.22' }
-  - { name: 'b5r10u39', mac: 'a4:bf:01:57:14:10', ip: '10.10.10.14' }
+  - { name: 'b5r10u39', mac: 'a4:bf:01:57:14:10', ip: '10.10.10.22' }
+  - { name: 'b5r10u37', mac: 'a4:bf:01:4f:2f:2e', ip: '10.10.10.8' }
   - { name: 'b5r10u14', mac: 'a4:bf:01:96:43:cd', ip: '10.10.10.15' }
   - { name: 'b5r10u11', mac: 'a4:bf:01:94:3e:55', ip: '10.10.10.12' }
   - { name: 'b5r10u08', mac: 'a4:bf:01:96:43:73', ip: '10.10.10.13' }
+  - { name: 'b5r10u11-bmc', mac: 'a4:bf:01:94:3e:57', ip: '10.10.10.61' }
+  - { name: 'b5r10u08-bmc', mac: 'a4:bf:01:96:43:75', ip: '10.10.10.62' }
+  - { name: 'b5r10u39-bmc', mac: 'a4:bf:01:57:14:14', ip: '10.10.10.63' }
+  - { name: 'b5r10u14-bmc', mac: 'a4:bf:01:96:43:cf', ip: '10.10.10.66' }
+  - { name: 'b5r10u37-bmc', mac: 'a4:bf:01:4f:2f:32', ip: '10.10.10.69' }
+  - { name: 'b5r10u70-bmc', mac: 'c4:cb:e1:b6:e7:4e', ip: '10.10.10.70' }
+  - { name: 'b5r10u71-bmc', mac: 'c4:cb:e1:b6:e8:aa', ip: '10.10.10.71' }
+  - { name: 'b5r10u72-bmc', mac: 'c4:cb:e1:b6:81:74', ip: '10.10.10.72' }
 dhcp_options:
-  - { option: 'ntp-servers', value: '10.10.10.22' }
+  - { option: 'routers', value: '10.10.10.1' }
+  - { option: 'ntp-servers', value: '10.10.10.8' }
+  - { option: 'subnet-mask', value: '255.255.255.0' }
+  - { option: 'domain-name-servers', value: '10.10.10.8' }

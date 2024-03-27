@@ -8,7 +8,7 @@
 //
 
 options {
-        listen-on port 53 { 127.0.0.1; 10.10.10.22; };
+        listen-on port 53 { 127.0.0.1; 10.10.10.8; };
         listen-on-v6 port 53 { none; };
         directory       "/var/named";
         dump-file       "/var/named/data/cache_dump.db";
@@ -16,7 +16,7 @@ options {
         memstatistics-file "/var/named/data/named_mem_stats.txt";
         secroots-file   "/var/named/data/named.secroots";
         recursing-file  "/var/named/data/named.recursing";
-        allow-query     { localhost; };
+        allow-query     { localhost; 10.10.10.0/24; };
 
         /*
          - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.

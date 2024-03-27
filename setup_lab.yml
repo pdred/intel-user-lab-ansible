@@ -1,5 +1,5 @@
 - name: Infrastructure Play
-  hosts: infrastructure
+  hosts: localhost
   become: true
   roles:
     - initial_setup
@@ -8,6 +8,5 @@
     - dhcp
     - ntp
     - firewall
-    - virtualization
     - network_config
     - hosts_updater
