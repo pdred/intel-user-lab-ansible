@@ -1,5 +1,5 @@
 - name: Infrastructure Play
-  hosts: infrastructure
+  hosts: localhost
   become: true
   roles:
     - initial_setup
