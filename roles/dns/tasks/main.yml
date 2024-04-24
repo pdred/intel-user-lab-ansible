@@ -25,7 +25,6 @@
     owner: root
     group: named
     mode: '0644'
-    notify: restart named
 
 - name: Configure Forward DNS Zone
   ansible.builtin.copy:
