@@ -16,9 +16,9 @@
 
 - name: Enable ssh-agent service to start on boot
   systemd:
-    user: yes
+    user: true
     name: ssh-agent
-    enabled: yes
+    enabled: true
     state: started
 
 - name: Add SSH key to ssh-agent
@@ -70,7 +70,7 @@
   user:
     name: "{{ ansible_user_id }}"
     groups: wheel
-    append: yes
+    append: true
 
 - name: Allow wheel group to sudo without a password
   lineinfile:
@@ -79,4 +79,3 @@
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
-
