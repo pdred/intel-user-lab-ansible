@@ -8,4 +8,3 @@
     - dhcp
     - ntp
     - firewall
-    - network_config
