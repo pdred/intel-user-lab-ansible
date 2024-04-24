@@ -1,8 +1,0 @@
-- name: Set DNS server to self and ignore auto DNS for IPv4
-  community.general.nmcli:
-    conn_name: "{{ network_connection_name }}"
-    type: ethernet
-    dns4: "{{ ansible_host }}"
-    dns4_ignore_auto: true
-    autoconnect: true
-    state: present

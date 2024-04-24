@@ -1,8 +1,0 @@
----
-- name: Update /etc/hosts with DNS entries
-  ansible.builtin.template:
-    src: hosts.j2
-    dest: /etc/hosts
-    mode: '0644'
-  become: true
-
