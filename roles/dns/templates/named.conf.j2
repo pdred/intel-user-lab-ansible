@@ -17,6 +17,7 @@ options {
         secroots-file   "/var/named/data/named.secroots";
         recursing-file  "/var/named/data/named.recursing";
         allow-query     { localhost; 192.168.10.0/24; };
+        forwarders      { 1.1.1.1; 1.0.0.1; };
 
         /*
          - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
@@ -30,7 +31,7 @@ options {
         */
         recursion yes;
 
-        dnssec-validation yes;
+        dnssec-validation no;
 
         managed-keys-directory "/var/named/dynamic";
         geoip-directory "/usr/share/GeoIP";
