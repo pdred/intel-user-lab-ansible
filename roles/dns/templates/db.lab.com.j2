@@ -1,5 +1,5 @@
 $TTL 604800     ; Default Time To Live
-@       IN      SOA     b5r10u37.lab.com. admin.lab.com. (
+@       IN      SOA     infra.lab.com. admin.lab.com. (
               3           ; Serial
          604800           ; Refresh
           86400           ; Retry
@@ -7,19 +7,17 @@ $TTL 604800     ; Default Time To Live
          604800 )         ; Negative Cache TTL
 ;
 ; Name servers
-@       IN      NS      b5r10u37.lab.com.
+@       IN      NS      infra.lab.com.
 
 ; A records for domain hosts
-b5r10u39 IN  A   10.10.10.22
-b5r10u37 IN  A   10.10.10.8
-b5r10u14 IN  A   10.10.10.15
-b5r10u11 IN  A   10.10.10.12
-b5r10u08 IN  A   10.10.10.13
+infra IN  A   192.168.10.2
+master IN A   192.168.10.3
+worker IN A   192.168.10.4
 
 ; Cname records
-masternode   CNAME  b5r10u39.lab.com.
+masternode   CNAME  infra.lab.com.
 
 ; OpenShift Records
-api.ocp         IN   A  10.10.10.22
-api-int.ocp     IN   A  10.10.10.22
-*.apps.ocp      IN   A  10.10.10.22
+api.ocp         IN   A  10.10.10.3
+api-int.ocp     IN   A  10.10.10.3
+*.apps.ocp      IN   A  10.10.10.3
