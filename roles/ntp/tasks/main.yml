@@ -1,3 +1,4 @@
+---
 - name: Install Chrony
   ansible.builtin.yum:
     name: chrony
