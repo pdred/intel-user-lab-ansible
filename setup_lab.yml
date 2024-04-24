@@ -9,4 +9,3 @@
     - ntp
     - firewall
     - network_config
-    - hosts_updater
