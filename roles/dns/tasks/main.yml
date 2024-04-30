@@ -47,9 +47,3 @@
   tags:
     - dns_config
 
-handlers:
-  - name: restart named
-    service:
-      name: named
-      state: restarted
-

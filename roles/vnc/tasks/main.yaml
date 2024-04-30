@@ -37,6 +37,27 @@
   tags:
     - vnc_config
 
+- name: Configure VNC xstartup for devcloud
+  template:
+    src: xstartup
+    dest: "/home/{{ vnc_user }}/.vnc/xstartup"
+  tags:
+    - vnc_config
+
+- name: Configure VNC config for devcloud
+  template:
+    src: config
+    dest: "/home/{{ vnc_user }}/.vnc/config"
+  tags:
+    - vnc_config
+
+- name: Configure VNC user for devcloud
+  template:
+    src: vncserver.users
+    dest: "/etc/tigervnc/vncserver.users"
+  tags:
+    - vnc_config
+
 - name: Reload systemd to apply changes
   systemd:
     daemon_reload: yes

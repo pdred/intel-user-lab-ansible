@@ -1,234 +1,301 @@
-diff --git a/roles/dhcp/tasks/main.yml b/roles/dhcp/tasks/main.yml
-index 8d81b6c..fe6ff13 100644
---- a/roles/dhcp/tasks/main.yml
-+++ b/roles/dhcp/tasks/main.yml
-@@ -3,6 +3,8 @@
-   ansible.builtin.yum:
-     name: dhcp-server
-     state: present
-+  tags:
-+    - dhcp_config
- 
- - name: Configure ISC DHCP Server
-   ansible.builtin.template:
-@@ -11,9 +13,13 @@
-     owner: root
-     group: root
-     mode: '0644'
-+  tags:
-+    - dhcp_config
- 
- - name: Enable and start ISC DHCP service
-   ansible.builtin.service:
-     name: dhcpd
-     state: started
-     enabled: true
-+  tags:
-+    - dhcp_config
-diff --git a/roles/dns/handlers/main.yml b/roles/dns/handlers/main.yml
-deleted file mode 100644
-index 2c4d854..0000000
---- a/roles/dns/handlers/main.yml
-+++ /dev/null
-@@ -1,6 +0,0 @@
-----
--- name: Restart BIND
--  ansible.builtin.service:
--    name: named
--    state: restarted
--    enabled: true
 diff --git a/roles/dns/tasks/main.yml b/roles/dns/tasks/main.yml
-index 592086f..30f9f53 100644
+index 30f9f53..52816b5 100644
 --- a/roles/dns/tasks/main.yml
 +++ b/roles/dns/tasks/main.yml
-@@ -3,20 +3,27 @@
-   ansible.builtin.yum:
-     name: bind
-     state: present
-+  tags:
-+    - dns_config
+@@ -47,9 +47,3 @@
+   tags:
+     - dns_config
  
- - name: Start and Enable Named Service
-   service:
-     name: named
-     state: started
-     enabled: true
-+  tags:
-+    - dns_config
+-handlers:
+-  - name: restart named
+-    service:
+-      name: named
+-      state: restarted
+-
+diff --git a/roles/vnc/tasks/main.yaml b/roles/vnc/tasks/main.yaml
+index cfae711..a3c0ced 100644
+--- a/roles/vnc/tasks/main.yaml
++++ b/roles/vnc/tasks/main.yaml
+@@ -37,6 +37,27 @@
+   tags:
+     - vnc_config
  
- - name: Configure BIND DNS Server
-   ansible.builtin.copy:
-     src: "/home/devcloud/intel-user-lab-ansible/roles/dns/templates/named.conf.j2"
--    dest: "/etc/named/named.conf"
-+    dest: "/etc/named.conf"
-     owner: root
-     group: named
-     mode: '0644'
-+  notify: restart named
++- name: Configure VNC xstartup for devcloud
++  template:
++    src: xstartup
++    dest: "/home/{{ vnc_user }}/.vnc/xstartup"
 +  tags:
-+    - dns_config
- 
- - name: Configure Reverse DNS Zone
-   ansible.builtin.copy:
-@@ -25,6 +32,9 @@
-     owner: root
-     group: named
-     mode: '0644'
-+  notify: restart named
-+  tags:
-+    - dns_config
- 
- - name: Configure Forward DNS Zone
-   ansible.builtin.copy:
-@@ -33,3 +43,13 @@
-     owner: root
-     group: named
-     mode: '0644'
-+  notify: restart named
-+  tags:
-+    - dns_config
++    - vnc_config
 +
-+handlers:
-+  - name: restart named
-+    service:
-+      name: named
-+      state: restarted
++- name: Configure VNC config for devcloud
++  template:
++    src: config
++    dest: "/home/{{ vnc_user }}/.vnc/config"
++  tags:
++    - vnc_config
 +
-diff --git a/roles/dns/templates/db.lab.com.j2 b/roles/dns/templates/db.lab.com.j2
-index 760f4a6..4f99d08 100644
---- a/roles/dns/templates/db.lab.com.j2
-+++ b/roles/dns/templates/db.lab.com.j2
-@@ -18,6 +18,6 @@ worker IN A   192.168.10.4
- masternode   CNAME  infra.lab.com.
- 
- ; OpenShift Records
--api.ocp         IN   A  10.10.10.3
--api-int.ocp     IN   A  10.10.10.3
--*.apps.ocp      IN   A  10.10.10.3
-+api.ocp         IN   A  192.168.10.3
-+api-int.ocp     IN   A  192.168.10.3
-+*.apps.ocp      IN   A  192.168.10.3
-diff --git a/roles/initial_setup/tasks/main.yml b/roles/initial_setup/tasks/main.yml
-index fe9f17d..f3b3002 100644
---- a/roles/initial_setup/tasks/main.yml
-+++ b/roles/initial_setup/tasks/main.yml
-@@ -3,28 +3,8 @@
-   ansible.builtin.stat:
-     path: "~/.ssh/ansible_ed25519"
-   register: ssh_key
--
--- name: Generate SSH key if it does not exist
--  ansible.builtin.command: ssh-keygen -t ed25519 -N "" -f ~/.ssh/ansible_ed25519
--  when: not ssh_key.stat.exists
--  delegate_to: localhost
--
--- name: Create systemd user service for ssh-agent
--  template:
--    src: ssh-agent.service.j2
--    dest: "/etc/systemd/user/ssh-agent.service"
--
--- name: Enable ssh-agent service to start on boot
--  systemd:
--    user: true
--    name: ssh-agent
--    enabled: true
--    state: started
--
--- name: Add SSH key to ssh-agent
--  ansible.builtin.shell: ssh-add ~/.ssh/ansible_ed25519
--  delegate_to: localhost
--  when: ssh_key.stat.exists
++- name: Configure VNC user for devcloud
++  template:
++    src: vncserver.users
++    dest: "/etc/tigervnc/vncserver.users"
 +  tags:
-+    - setup_config
- 
- - name: Install required packages
-   ansible.builtin.package:
-@@ -49,12 +29,6 @@
-     path: "~/.ssh/authorized_keys"
-     state: touch
- 
--- name: Add SSH key to authorized_keys
--  lineinfile:
--    path: "~/.ssh/authorized_keys"
--    line: "{{ lookup('file', ssh_key_path + '.pub') }}"
--    state: present
--
- - name: Install required packages
-   ansible.builtin.package:
-     name:
-@@ -65,12 +39,16 @@
-       - NetworkManager-tui
-       - python3-pip
-     state: present
-+  tags:
-+    - packages_config
- 
- - name: Add current user to the wheel group
-   user:
-     name: "{{ ansible_user_id }}"
-     groups: wheel
-     append: true
-+  tags:
-+    - wheel_config
- 
- - name: Allow wheel group to sudo without a password
-   lineinfile:
-@@ -79,3 +57,18 @@
-     regexp: '^%wheel'
-     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
-     validate: 'visudo -cf %s'
-+  tags:
-+    - wheel_config
++    - vnc_config
 +
-+- name: Set local DNS server and search domain
-+  ansible.builtin.lineinfile:
-+    path: /etc/resolv.conf
-+    regexp: "{{ item.regexp }}"
-+    line: "{{ item.line }}"
-+    state: present
-+  loop:
-+    - { regexp: '^nameserver', line: 'nameserver 127.0.0.1' }
-+    - { regexp: '^search', line: 'search lab.com' }
-+  tags:
-+    - localhost_config
-+
-diff --git a/roles/ntp/tasks/main.yml b/roles/ntp/tasks/main.yml
-index 7656d27..4bc2b4d 100644
---- a/roles/ntp/tasks/main.yml
-+++ b/roles/ntp/tasks/main.yml
-@@ -3,6 +3,8 @@
-   ansible.builtin.yum:
-     name: chrony
-     state: present
-+  tags:
-+    - chrony_config
- 
- - name: Configure Chrony as an NTP server
-   ansible.builtin.template:
-@@ -11,9 +13,13 @@
-     owner: root
-     group: root
-     mode: '0644'
-+  tags:
-+    - chrony_config
- 
- - name: Enable and start Chrony service
-   ansible.builtin.service:
-     name: chronyd
-     state: started
-     enabled: true
-+  tags:
-+    - chrony_config
-diff --git a/setup_lab.yml b/setup_lab.yml
-index c1d5bfc..36250fc 100644
---- a/setup_lab.yml
-+++ b/setup_lab.yml
-@@ -6,5 +6,7 @@
-     - initial_setup
-     - dns
-     - dhcp
--    - ntp
-     - firewall
-+    - nfs
-+    - ntp
-+    - vnc
+ - name: Reload systemd to apply changes
+   systemd:
+     daemon_reload: yes
+diff --git a/roles/vnc/templates/vncserver@2.service.j2 b/roles/vnc/templates/vncserver@2.service.j2
+index a91321d..e44d7b6 100755
+--- a/roles/vnc/templates/vncserver@2.service.j2
++++ b/roles/vnc/templates/vncserver@2.service.j2
+@@ -5,10 +5,8 @@ After=syslog.target network.target
+ [Service]
+ Type=forking
+ User={{ vnc_user }}
+-PAMName=login
+-PIDFile=/home/{{ vnc_user }}/.vnc/%H:2.pid
+ ExecStartPre=-/usr/bin/vncserver -kill :2 > /dev/null 2>&1
+-ExecStart=/usr/bin/vncserver :2 -geometry 1280x1024 -depth 24 -rfbport 5904
++ExecStart=/usr/bin/vncserver :2 -geometry 1280x1024 -depth 24 -rfbport 5902
+ ExecStop=/usr/bin/vncserver -kill :2
+ Restart=on-failure
+ RestartSec=15
+diff --git a/updates.patch b/updates.patch
+index b9f2e27..e69de29 100644
+--- a/updates.patch
++++ b/updates.patch
+@@ -1,234 +0,0 @@
+-diff --git a/roles/dhcp/tasks/main.yml b/roles/dhcp/tasks/main.yml
+-index 8d81b6c..fe6ff13 100644
+---- a/roles/dhcp/tasks/main.yml
+-+++ b/roles/dhcp/tasks/main.yml
+-@@ -3,6 +3,8 @@
+-   ansible.builtin.yum:
+-     name: dhcp-server
+-     state: present
+-+  tags:
+-+    - dhcp_config
+- 
+- - name: Configure ISC DHCP Server
+-   ansible.builtin.template:
+-@@ -11,9 +13,13 @@
+-     owner: root
+-     group: root
+-     mode: '0644'
+-+  tags:
+-+    - dhcp_config
+- 
+- - name: Enable and start ISC DHCP service
+-   ansible.builtin.service:
+-     name: dhcpd
+-     state: started
+-     enabled: true
+-+  tags:
+-+    - dhcp_config
+-diff --git a/roles/dns/handlers/main.yml b/roles/dns/handlers/main.yml
+-deleted file mode 100644
+-index 2c4d854..0000000
+---- a/roles/dns/handlers/main.yml
+-+++ /dev/null
+-@@ -1,6 +0,0 @@
+-----
+--- name: Restart BIND
+--  ansible.builtin.service:
+--    name: named
+--    state: restarted
+--    enabled: true
+-diff --git a/roles/dns/tasks/main.yml b/roles/dns/tasks/main.yml
+-index 592086f..30f9f53 100644
+---- a/roles/dns/tasks/main.yml
+-+++ b/roles/dns/tasks/main.yml
+-@@ -3,20 +3,27 @@
+-   ansible.builtin.yum:
+-     name: bind
+-     state: present
+-+  tags:
+-+    - dns_config
+- 
+- - name: Start and Enable Named Service
+-   service:
+-     name: named
+-     state: started
+-     enabled: true
+-+  tags:
+-+    - dns_config
+- 
+- - name: Configure BIND DNS Server
+-   ansible.builtin.copy:
+-     src: "/home/devcloud/intel-user-lab-ansible/roles/dns/templates/named.conf.j2"
+--    dest: "/etc/named/named.conf"
+-+    dest: "/etc/named.conf"
+-     owner: root
+-     group: named
+-     mode: '0644'
+-+  notify: restart named
+-+  tags:
+-+    - dns_config
+- 
+- - name: Configure Reverse DNS Zone
+-   ansible.builtin.copy:
+-@@ -25,6 +32,9 @@
+-     owner: root
+-     group: named
+-     mode: '0644'
+-+  notify: restart named
+-+  tags:
+-+    - dns_config
+- 
+- - name: Configure Forward DNS Zone
+-   ansible.builtin.copy:
+-@@ -33,3 +43,13 @@
+-     owner: root
+-     group: named
+-     mode: '0644'
+-+  notify: restart named
+-+  tags:
+-+    - dns_config
+-+
+-+handlers:
+-+  - name: restart named
+-+    service:
+-+      name: named
+-+      state: restarted
+-+
+-diff --git a/roles/dns/templates/db.lab.com.j2 b/roles/dns/templates/db.lab.com.j2
+-index 760f4a6..4f99d08 100644
+---- a/roles/dns/templates/db.lab.com.j2
+-+++ b/roles/dns/templates/db.lab.com.j2
+-@@ -18,6 +18,6 @@ worker IN A   192.168.10.4
+- masternode   CNAME  infra.lab.com.
+- 
+- ; OpenShift Records
+--api.ocp         IN   A  10.10.10.3
+--api-int.ocp     IN   A  10.10.10.3
+--*.apps.ocp      IN   A  10.10.10.3
+-+api.ocp         IN   A  192.168.10.3
+-+api-int.ocp     IN   A  192.168.10.3
+-+*.apps.ocp      IN   A  192.168.10.3
+-diff --git a/roles/initial_setup/tasks/main.yml b/roles/initial_setup/tasks/main.yml
+-index fe9f17d..f3b3002 100644
+---- a/roles/initial_setup/tasks/main.yml
+-+++ b/roles/initial_setup/tasks/main.yml
+-@@ -3,28 +3,8 @@
+-   ansible.builtin.stat:
+-     path: "~/.ssh/ansible_ed25519"
+-   register: ssh_key
+--
+--- name: Generate SSH key if it does not exist
+--  ansible.builtin.command: ssh-keygen -t ed25519 -N "" -f ~/.ssh/ansible_ed25519
+--  when: not ssh_key.stat.exists
+--  delegate_to: localhost
+--
+--- name: Create systemd user service for ssh-agent
+--  template:
+--    src: ssh-agent.service.j2
+--    dest: "/etc/systemd/user/ssh-agent.service"
+--
+--- name: Enable ssh-agent service to start on boot
+--  systemd:
+--    user: true
+--    name: ssh-agent
+--    enabled: true
+--    state: started
+--
+--- name: Add SSH key to ssh-agent
+--  ansible.builtin.shell: ssh-add ~/.ssh/ansible_ed25519
+--  delegate_to: localhost
+--  when: ssh_key.stat.exists
+-+  tags:
+-+    - setup_config
+- 
+- - name: Install required packages
+-   ansible.builtin.package:
+-@@ -49,12 +29,6 @@
+-     path: "~/.ssh/authorized_keys"
+-     state: touch
+- 
+--- name: Add SSH key to authorized_keys
+--  lineinfile:
+--    path: "~/.ssh/authorized_keys"
+--    line: "{{ lookup('file', ssh_key_path + '.pub') }}"
+--    state: present
+--
+- - name: Install required packages
+-   ansible.builtin.package:
+-     name:
+-@@ -65,12 +39,16 @@
+-       - NetworkManager-tui
+-       - python3-pip
+-     state: present
+-+  tags:
+-+    - packages_config
+- 
+- - name: Add current user to the wheel group
+-   user:
+-     name: "{{ ansible_user_id }}"
+-     groups: wheel
+-     append: true
+-+  tags:
+-+    - wheel_config
+- 
+- - name: Allow wheel group to sudo without a password
+-   lineinfile:
+-@@ -79,3 +57,18 @@
+-     regexp: '^%wheel'
+-     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+-     validate: 'visudo -cf %s'
+-+  tags:
+-+    - wheel_config
+-+
+-+- name: Set local DNS server and search domain
+-+  ansible.builtin.lineinfile:
+-+    path: /etc/resolv.conf
+-+    regexp: "{{ item.regexp }}"
+-+    line: "{{ item.line }}"
+-+    state: present
+-+  loop:
+-+    - { regexp: '^nameserver', line: 'nameserver 127.0.0.1' }
+-+    - { regexp: '^search', line: 'search lab.com' }
+-+  tags:
+-+    - localhost_config
+-+
+-diff --git a/roles/ntp/tasks/main.yml b/roles/ntp/tasks/main.yml
+-index 7656d27..4bc2b4d 100644
+---- a/roles/ntp/tasks/main.yml
+-+++ b/roles/ntp/tasks/main.yml
+-@@ -3,6 +3,8 @@
+-   ansible.builtin.yum:
+-     name: chrony
+-     state: present
+-+  tags:
+-+    - chrony_config
+- 
+- - name: Configure Chrony as an NTP server
+-   ansible.builtin.template:
+-@@ -11,9 +13,13 @@
+-     owner: root
+-     group: root
+-     mode: '0644'
+-+  tags:
+-+    - chrony_config
+- 
+- - name: Enable and start Chrony service
+-   ansible.builtin.service:
+-     name: chronyd
+-     state: started
+-     enabled: true
+-+  tags:
+-+    - chrony_config
+-diff --git a/setup_lab.yml b/setup_lab.yml
+-index c1d5bfc..36250fc 100644
+---- a/setup_lab.yml
+-+++ b/setup_lab.yml
+-@@ -6,5 +6,7 @@
+-     - initial_setup
+-     - dns
+-     - dhcp
+--    - ntp
+-     - firewall
+-+    - nfs
+-+    - ntp
+-+    - vnc
