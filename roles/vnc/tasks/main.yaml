@@ -1,0 +1,60 @@
+---
+- name: Install TigerVNC server
+  yum:
+    name: tigervnc-server
+    state: present
+  tags:
+    - vnc_config
+
+- name: Ensure VNC directory exists
+  file:
+    path: "/home/{{ vnc_user }}/vnc"
+    state: directory
+    owner: "{{ vnc_user }}"
+    group: "{{ vnc_user }}"
+    mode: '0755'
+  tags:
+    - vnc_config
+
+- name: Set VNC password
+  expect:
+    command: "vncpasswd /home/{{ vnc_user }}/vnc/passwd"
+    responses:
+      Password: "{{ vnc_password }}"
+      Verify: "{{ vnc_password }}"
+      Would you like to enter a view-only password \(y/n\)\?: "n"
+    echo: yes
+  no_log: false
+  become: true
+  become_user: "{{ vnc_user }}"
+  tags:
+    - vnc_config
+
+- name: Configure VNC session for devcloud
+  template:
+    src: vncserver@2.service.j2
+    dest: "/etc/systemd/system/vncserver@:2.service"
+  tags:
+    - vnc_config
+
+- name: Reload systemd to apply changes
+  systemd:
+    daemon_reload: yes
+  tags:
+    - vnc_config
+
+- name: Ensure VNC server is enabled and started
+  systemd:
+    name: vncserver@:2
+    state: restarted
+    enabled: yes
+  ignore_errors: yes
+  tags:
+    - vnc_config
+
+- name: Check service status if restart failed
+  command: systemctl status vncserver@:2.service
+  when: ansible_failed_task is defined
+  tags:
+    - vnc_config
+

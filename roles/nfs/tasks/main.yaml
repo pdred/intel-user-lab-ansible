@@ -1,0 +1,17 @@
+---
+# tasks file for ansible-role-nfs
+- name: Install nfs-utils package
+  yum:
+    name: nfs-utils
+    state: present
+  tags:
+    - nfs_config
+
+- name: Ensure NFS service is enabled and running
+  systemd:
+    name: nfs-server
+    state: started
+    enabled: true
+  tags:
+    - nfs_config
+

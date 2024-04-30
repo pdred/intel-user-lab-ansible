@@ -3,20 +3,27 @@
   ansible.builtin.yum:
     name: bind
     state: present
+  tags:
+    - dns_config
 
 - name: Start and Enable Named Service
   service:
     name: named
     state: started
     enabled: true
+  tags:
+    - dns_config
 
 - name: Configure BIND DNS Server
   ansible.builtin.copy:
     src: "/home/devcloud/intel-user-lab-ansible/roles/dns/templates/named.conf.j2"
-    dest: "/etc/named/named.conf"
+    dest: "/etc/named.conf"
     owner: root
     group: named
     mode: '0644'
+  notify: restart named
+  tags:
+    - dns_config
 
 - name: Configure Reverse DNS Zone
   ansible.builtin.copy:
@@ -25,6 +32,9 @@
     owner: root
     group: named
     mode: '0644'
+  notify: restart named
+  tags:
+    - dns_config
 
 - name: Configure Forward DNS Zone
   ansible.builtin.copy:
@@ -33,3 +43,13 @@
     owner: root
     group: named
     mode: '0644'
+  notify: restart named
+  tags:
+    - dns_config
+
+handlers:
+  - name: restart named
+    service:
+      name: named
+      state: restarted
+

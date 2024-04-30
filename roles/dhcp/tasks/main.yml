@@ -3,6 +3,8 @@
   ansible.builtin.yum:
     name: dhcp-server
     state: present
+  tags:
+    - dhcp_config
 
 - name: Configure ISC DHCP Server
   ansible.builtin.template:
@@ -11,9 +13,13 @@
     owner: root
     group: root
     mode: '0644'
+  tags:
+    - dhcp_config
 
 - name: Enable and start ISC DHCP service
   ansible.builtin.service:
     name: dhcpd
     state: started
     enabled: true
+  tags:
+    - dhcp_config

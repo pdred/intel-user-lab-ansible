@@ -6,5 +6,7 @@
     - initial_setup
     - dns
     - dhcp
-    - ntp
     - firewall
+    - nfs
+    - ntp
+    - vnc

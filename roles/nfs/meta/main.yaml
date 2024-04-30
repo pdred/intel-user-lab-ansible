@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: your_name
+  description: Role to configure NFS server
+  company: your_company
+
+  # List of platforms you've tested the role on:
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+  license: MIT
+
+dependencies: []
+

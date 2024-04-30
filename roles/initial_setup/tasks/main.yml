@@ -3,28 +3,8 @@
   ansible.builtin.stat:
     path: "~/.ssh/ansible_ed25519"
   register: ssh_key
-
-- name: Generate SSH key if it does not exist
-  ansible.builtin.command: ssh-keygen -t ed25519 -N "" -f ~/.ssh/ansible_ed25519
-  when: not ssh_key.stat.exists
-  delegate_to: localhost
-
-- name: Create systemd user service for ssh-agent
-  template:
-    src: ssh-agent.service.j2
-    dest: "/etc/systemd/user/ssh-agent.service"
-
-- name: Enable ssh-agent service to start on boot
-  systemd:
-    user: true
-    name: ssh-agent
-    enabled: true
-    state: started
-
-- name: Add SSH key to ssh-agent
-  ansible.builtin.shell: ssh-add ~/.ssh/ansible_ed25519
-  delegate_to: localhost
-  when: ssh_key.stat.exists
+  tags:
+    - setup_config
 
 - name: Install required packages
   ansible.builtin.package:
@@ -49,12 +29,6 @@
     path: "~/.ssh/authorized_keys"
     state: touch
 
-- name: Add SSH key to authorized_keys
-  lineinfile:
-    path: "~/.ssh/authorized_keys"
-    line: "{{ lookup('file', ssh_key_path + '.pub') }}"
-    state: present
-
 - name: Install required packages
   ansible.builtin.package:
     name:
@@ -65,12 +39,16 @@
       - NetworkManager-tui
       - python3-pip
     state: present
+  tags:
+    - packages_config
 
 - name: Add current user to the wheel group
   user:
     name: "{{ ansible_user_id }}"
     groups: wheel
     append: true
+  tags:
+    - wheel_config
 
 - name: Allow wheel group to sudo without a password
   lineinfile:
@@ -79,3 +57,18 @@
     regexp: '^%wheel'
     line: '%wheel ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
+  tags:
+    - wheel_config
+
+- name: Set local DNS server and search domain
+  ansible.builtin.lineinfile:
+    path: /etc/resolv.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: '^nameserver', line: 'nameserver 127.0.0.1' }
+    - { regexp: '^search', line: 'search lab.com' }
+  tags:
+    - localhost_config
+
