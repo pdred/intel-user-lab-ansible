@@ -3,8 +3,8 @@
 ## Several common ones are shown below. Uncomment and modify to your liking.
 ##
 securitytypes=vncauth,tlsvnc
-# desktop=sandbox
+desktop=sandbox
 geometry=1280x1024
 session=gnome
 # localhost
-# alwaysshared
+alwaysshared

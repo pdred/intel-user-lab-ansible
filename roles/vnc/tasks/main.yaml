@@ -48,6 +48,7 @@
   template:
     src: config
     dest: "/home/{{ vnc_user }}/.vnc/config"
+    mode: '0755'
   tags:
     - vnc_config
 
