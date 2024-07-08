@@ -11,3 +11,6 @@ To execute, run the following command from the root of this git repo:
 ``` sh
 ansible-playbook -i inventory/hosts.ini setup_lab.yml
 ```
+
+Repository structure:
+![Ansible-Tree](https://github.com/pdred/intel-user-lab-ansible/assets/15944580/12659d8b-ef5e-4185-9089-693b9ab4e256)
